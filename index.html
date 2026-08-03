@@ -775,7 +775,7 @@
             border: 4px solid #000;
             box-shadow: 4px 4px 0px #000;
             border-radius: var(--radius-md);
-            overflow: hidden;
+            overflow-x: auto;
             margin-top: 1rem;
         }
 
@@ -1061,7 +1061,25 @@
             outline: none;
         }
 
-        /* Responsive */
+        /* Responsive & Grid Layout Utility Definitions */
+        .content-body {
+            padding: 2rem;
+            flex-grow: 1;
+        }
+
+        .calc-panel, .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .calc-panel, .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 992px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -1075,6 +1093,34 @@
             }
             .mobile-menu-btn {
                 display: block;
+            }
+            .content-body {
+                padding: 1.25rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .map-node {
+                gap: 0.75rem;
+            }
+            .map-node-badge {
+                width: 48px;
+                height: 48px;
+                font-size: 0.85rem;
+                border-width: 3px;
+                box-shadow: 0px 3px 0px #000000;
+            }
+            .trophy-map-path, .trophy-map-fill {
+                left: 20px;
+            }
+            .map-node-content {
+                padding: 0.75rem;
+            }
+            .topbar {
+                padding: 0 1rem;
+            }
+            .topbar h2 {
+                font-size: 1.3rem;
             }
         }
     </style>
@@ -5852,6 +5898,13 @@ const F_TABLE_975 = {
         });
         
         window.addEventListener('resize', updateTrophyUI);
+        
+        // Close mobile sidebar when clicking main content
+        document.querySelector('.main-content').addEventListener('click', (e) => {
+            if (window.innerWidth <= 992) {
+                document.getElementById('appSidebar').classList.remove('mobile-open');
+            }
+        });
     });
 </script>
 
