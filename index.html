@@ -1186,7 +1186,7 @@
     <main class="main-content">
         <header class="topbar">
             <div style="display:flex; align-items:center; gap:1rem;">
-                <button class="mobile-menu-btn" onclick="toggleMobileSidebar()">☰</button>
+                <button class="mobile-menu-btn" onclick="toggleMobileSidebar(event)">☰</button>
                 <h2 id="pageTitle" data-i18n="nav_trophy">🏆 Trophy Road</h2>
             </div>
             <div class="topbar-actions">
@@ -4143,7 +4143,8 @@ const F_TABLE_975 = {
         }
     }
 
-    function toggleMobileSidebar() {
+    function toggleMobileSidebar(event) {
+        if (event) event.stopPropagation();
         document.getElementById('appSidebar').classList.toggle('mobile-open');
     }
 
@@ -5901,7 +5902,7 @@ const F_TABLE_975 = {
         
         // Close mobile sidebar when clicking main content
         document.querySelector('.main-content').addEventListener('click', (e) => {
-            if (window.innerWidth <= 992) {
+            if (window.innerWidth <= 992 && !e.target.closest('.mobile-menu-btn')) {
                 document.getElementById('appSidebar').classList.remove('mobile-open');
             }
         });
