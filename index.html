@@ -6454,6 +6454,29 @@ const F_TABLE_975 = {
                 document.getElementById('appSidebar').classList.remove('mobile-open');
             }
         });
+
+        // Secret keyboard command to reset progress: Ctrl + Alt + Shift + R
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.shiftKey && e.key.toLowerCase() === 'r') {
+                e.preventDefault();
+                showCustomBrawlAlert(
+                    "⚠️ PROGRESS WIPE",
+                    "Do you really want to reset all your trophies, brawlers, and boss progress? This action cannot be undone.",
+                    () => {
+                        localStorage.removeItem('userTrophies');
+                        localStorage.removeItem('unlockedBrawlers');
+                        localStorage.removeItem('brawl_actions_v5');
+                        localStorage.removeItem('brawl_pp_v5');
+                        localStorage.removeItem('brawl_levels_v5');
+                        localStorage.removeItem('brawl_boss_hp_v5');
+                        localStorage.removeItem('brawl_boss_def_v5');
+                        localStorage.removeItem('passedRivals');
+                        location.reload();
+                    },
+                    true
+                );
+            }
+        });
     });
 </script>
 
