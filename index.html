@@ -1037,6 +1037,57 @@
             to { transform: translate(-50%, -50%) scale(1); }
         }
 
+        /* Brawl Box styling */
+        .brawl-box {
+            position: relative;
+            width: 140px;
+            height: 100px;
+            background: linear-gradient(135deg, #00bfff, #0056b3);
+            border: 6px solid #000;
+            border-radius: 12px;
+            margin: 2rem auto;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #002244, 0 15px 20px rgba(0,0,0,0.5);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .brawl-box:active {
+            transform: scale(0.92) translateY(4px);
+            box-shadow: 0 4px 0 #002244, 0 5px 10px rgba(0,0,0,0.5);
+        }
+        .brawl-box-ribbon {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 100%;
+            background: #fe4c8c;
+            border-left: 4px solid #000;
+            border-right: 4px solid #000;
+        }
+        .brawl-box-latch {
+            position: absolute;
+            left: 50%;
+            top: 40%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: #ffd700;
+            border: 4px solid #000;
+            border-radius: 50%;
+            box-shadow: 0 4px 0 #8b6508;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .brawl-box-latch::after {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background: #000;
+            border-radius: 50%;
+        }
+
         .popup-overlay {
             position: fixed;
             top: 0;
@@ -1995,6 +2046,41 @@
         <p id="popupBrawlerDesc" style="font-size:1rem; margin-bottom:1.5rem; color:#dcd6f7;"></p>
         <button class="btn btn-green" onclick="closePopup()">
             <span class="btn-text">AWESOME!</span>
+        </button>
+    </div>
+</div>
+
+<!-- Custom Brawl Alert Modal -->
+<div class="popup-overlay" id="brawlAlertOverlay"></div>
+<div class="brawl-popup" id="brawlAlertPopup" style="z-index: 1020;">
+    <h2 id="brawlAlertTitle" style="color:var(--text-gold); font-size:2.0rem; -webkit-text-stroke:1.5px #000; text-shadow:2px 2px #000; margin-bottom:1rem;">ALERT</h2>
+    <p id="brawlAlertText" style="color:#dcd6f7; font-size:1.1rem; margin-bottom:1.5rem; line-height:1.4;"></p>
+    <button class="btn btn-green" id="brawlAlertBtn" onclick="closeBrawlAlert()">
+        <span class="btn-text" id="brawlAlertBtnText">OK!</span>
+    </button>
+</div>
+
+<!-- Boss Challenge Modal -->
+<div class="popup-overlay" id="bossChallengeOverlay"></div>
+<div class="brawl-popup" id="bossChallengePopup" style="z-index: 1020; max-width: 500px;">
+    <h2 id="bossChallengeTitle" style="color:var(--brawl-pink); font-size:1.8rem; -webkit-text-stroke:1.5px #000; text-shadow:2px 2px #000; margin-bottom:1rem;">⚔️ BOSS CHALLENGE!</h2>
+    <p id="bossChallengeText" style="color:#fff; font-size:1.05rem; margin-bottom:1.5rem; line-height:1.4;"></p>
+    <div id="bossChallengeOptions" style="display:flex; flex-direction:column; gap:0.75rem; text-align:left;">
+        <!-- Filled dynamically by JS -->
+    </div>
+</div>
+
+<!-- Duel Challenge Modal -->
+<div class="popup-overlay" id="duelOverlay"></div>
+<div class="brawl-popup" id="duelPopup" style="z-index: 1020;">
+    <h2 style="color:var(--brawl-pink); font-size:2.0rem; -webkit-text-stroke:1.5px #000; text-shadow:2px 2px #000; margin-bottom:1rem;">⚔️ LEADERBOARD DUEL!</h2>
+    <p id="duelText" style="color:#dcd6f7; font-size:1.1rem; margin-bottom:1.5rem; line-height:1.4;"></p>
+    <div style="display:flex; justify-content:center; gap:1rem;">
+        <button class="btn btn-green" onclick="acceptDuel()">
+            <span class="btn-text">Accept!</span>
+        </button>
+        <button class="btn btn-red" onclick="declineDuel()">
+            <span class="btn-text">Flee (-50 🏆)</span>
         </button>
     </div>
 </div>
@@ -3731,6 +3817,41 @@ const F_TABLE_975 = {
     // Brawler definitions
     const BRAWLERS = [{"id": "desc", "emoji": "\ud83d\udcca", "name_en": "Descriptive-Dynamo", "name_zh": "\u6558\u8ff0\u7d71\u8a08\u9ea5\u514b", "rarity_en": "COMMON", "rarity_zh": "\u666e\u901a", "rarity_class": "rarity-common", "trophies": 0, "desc_en": "Summarizes raw dental data instantly. Calculates mean, variance, and standard deviation.", "desc_zh": "\u80fd\u77ac\u9593\u5c07\u7259\u79d1\u96dc\u4e82\u6578\u64da\u6574\u7406\u6210\u7cbe\u6e96\u7684\u6458\u8981\u3002\u80fd\u8a08\u7b97\u5e73\u5747\u6578\u3001\u8b8a\u7570\u6578\u8207\u6a19\u6e96\u5dee\u3002", "attack_en": "Summary Blast: Spits out variance ($s^2$), range, and sample size ($n$).", "attack_zh": "\u6458\u8981\u8f5f\u70b8\uff1a\u767c\u5c04\u8b8a\u7570\u6578 ($s^2$)\u3001\u5168\u8ddd\u548c\u6a23\u672c\u6578 ($n$)\u3002", "super_en": "Outlier Detection: Instantly targets and isolates outlying patient values using Q1, Q3, and IQR.", "super_zh": "\u7570\u5e38\u6383\u63cf\uff1a\u5229\u7528\u7b2c\u4e00\u56db\u5206\u4f4d\u6578 (Q1)\u3001\u7b2c\u4e09\u56db\u5206\u4f4d\u6578 (Q3) \u548c\u56db\u5206\u4f4d\u8ddd (IQR) \u7cbe\u78ba\u9396\u5b9a\u4e26\u9694\u96e2\u6578\u64da\u4e2d\u7684\u7570\u5e38\u503c\u3002", "levels": ["Power Level 1: Standard Descriptive summaries.", "Power Level 2 (Unlock 50 PP): IQR is resistant to outliers, unlike mean and variance.", "Power Level 3 (Unlock 100 PP): Boxplot boundary logic: Outliers are values outside [Q1 - 1.5*IQR, Q3 + 1.5*IQR].", "Power Level 4 (Unlock 150 PP): Dentist Tip: Salivary flow variance shows variability in preparation depths.", "Power Level 5 (Max - 200 PP): Exam Mastery: If sample variance $s^2$ is computed, denominator is $n-1$ for unbiased estimate."]}, {"id": "ftest", "emoji": "\ud83d\udd2c", "name_en": "Variance-Viper", "name_zh": "\u65b9\u5dee\u6bd2\u86c7", "rarity_en": "RARE", "rarity_zh": "\u7a00\u6709", "rarity_class": "rarity-rare", "trophies": 150, "desc_en": "Tests homogeneity of variances between two dental samples. A mandatory setup before comparison of means!", "desc_zh": "\u5c08\u9580\u7528\u4f86\u6aa2\u5b9a\u5169\u7d44\u7368\u7acb\u7259\u79d1\u6a23\u672c\u7684\u8b8a\u7570\u6578\u540c\u8cea\u6027\u3002\u5728\u6bd4\u8f03\u5747\u503c\u4e4b\u524d\uff0c\u4ed6\u662f\u5fc5\u4e0d\u53ef\u5c11\u7684\u958b\u8def\u5148\u92d2\uff01", "attack_en": "Variance Spit: Divides sample variances ($F = s_1^2 / s_2^2$) to test their ratio.", "attack_zh": "\u65b9\u5dee\u6bd2\u6db2\uff1a\u5c07\u5169\u7d44\u6a23\u672c\u8b8a\u7570\u6578\u76f8\u9664 ($F = s_1^2 / s_2^2$) \u4f86\u8a08\u7b97 F \u6aa2\u5b9a\u7d71\u8a08\u91cf\u3002", "super_en": "Homogeneity Shield: Validates if variances are equal. If $F_{calc}$ stays in $[F_{lower}, F_{upper}]$, equal variance is confirmed!", "super_zh": "\u7b49\u65b9\u5dee\u9632\u58c1\uff1a\u6aa2\u5b9a\u8b8a\u7570\u6578\u662f\u5426\u540c\u8cea\u3002\u82e5 $F_{calc}$ \u843d\u5728\u5340\u9593 $[F_{lower}, F_{upper}]$ \u5167\uff0c\u5247\u65b9\u5dee\u540c\u8cea\u6027\u6210\u7acb\uff01", "levels": ["Power Level 1: F-Test ratio calculations.", "Power Level 2 (Unlock 50 PP): Degrees of freedom: $df_1 = n_1 - 1$ (numerator), $df_2 = n_2 - 1$ (denominator).", "Power Level 3 (Unlock 100 PP): Reciprocal Rule: $F_{df_1, df_2, \\alpha/2} = 1 / F_{df_2, df_1, 1 - \\alpha/2}$ to find lower bound.", "Power Level 4 (Unlock 150 PP): Dentist Tip: Must run F-test to confirm equal variance before running Pooled t-Test.", "Power Level 5 (Max - 200 PP): Exam Mastery: In CEU 2026 exam, $F_{calc} = 0.1757$. Since it is in $[0.0662, 9.98]$, variances are assumed equal."]}, {"id": "ttest", "emoji": "\ud83e\udd16", "name_en": "Mean-Machine", "name_zh": "\u5747\u503c\u6a5f\u7532", "rarity_en": "SUPER RARE", "rarity_zh": "\u8d85\u7a00\u6709", "rarity_class": "rarity-superrare", "trophies": 300, "desc_en": "Compares average values of two independent groups (e.g., Nitric oxide levels in healthy vs hypertensive patients).", "desc_zh": "\u5c08\u653b\u6bd4\u8f03\u5169\u7d44\u7368\u7acb\u6a23\u672c\u7684\u5e73\u5747\u6578\u5dee\u7570\uff08\u4f8b\u5982\u6bd4\u8f03\u5065\u5eb7\u5c0d\u7167\u7d44\u8207\u9ad8\u8840\u58d3\u7d44\u7684\u553e\u6db2\u785d\u9178\u9e7d\u6fc3\u5ea6\uff09\u3002", "attack_en": "Difference Cannon: Fires a projectile based on the difference between means ($\\bar{x}_1 - \\bar{x}_2$).", "attack_zh": "\u5747\u503c\u52a0\u8fb2\u7832\uff1a\u767c\u5c04\u4ee5\u5169\u7d44\u6a23\u672c\u5747\u503c\u5dee\u503c ($\\bar{x}_1 - \\bar{x}_2$) \u70ba\u57fa\u790e\u7684\u5f37\u529b\u5149\u675f\u3002", "super_en": "Pooled Barrier: Uses Pooled Variance ($s_p^2$) to adjust the standard error against random variation.", "super_zh": "\u5408\u4f75\u8b77\u76fe\uff1a\u4f7f\u7528\u5408\u4f75\u8b8a\u7570\u6578 ($s_p^2$) \u4f86\u964d\u4f4e\u96a8\u6a5f\u62bd\u6a23\u8aa4\u5dee\u7684\u5e72\u64fe\u3002", "levels": ["Power Level 1: Two independent sample means comparison.", "Power Level 2 (Unlock 50 PP): Pooled variance $s_p^2 = \\frac{(n_1-1)s_1^2 + (n_2-1)s_2^2}{n_1+n_2-2}$ balances variance relative to sample sizes.", "Power Level 3 (Unlock 100 PP): Total degrees of freedom: $df = n_1 + n_2 - 2$. For Situation 1: $df = 4+5-2 = 7$.", "Power Level 4 (Unlock 150 PP): Dentist Tip: Use one-tailed t-test when expecting direction (e.g. healthy mean is higher than hypertensive).", "Power Level 5 (Max - 200 PP): Exam Mastery: In CEU 2026, $t_{calc} = 4.77 > t_{crit, 0.95} = 1.895$. Rejection area hit! $H_0$ rejected."]}, {"id": "paired", "emoji": "\ud83d\udde1\ufe0f", "name_en": "Double-Impact", "name_zh": "\u96d9\u91cd\u6253\u64ca", "rarity_en": "EPIC", "rarity_zh": "\u53f2\u8a69", "rarity_class": "rarity-epic", "trophies": 500, "desc_en": "Ideal for clinical split-mouth designs or testing patients before and after a treatment (e.g. pH change).", "desc_zh": "\u6700\u9069\u5408\u7528\u65bc\u7259\u79d1\u5206\u53e3\u8a2d\u8a08 (Split-mouth design) \u6216\u6e2c\u8a66\u540c\u4e00\u7d44\u60a3\u8005\u63a5\u53d7\u6cbb\u7642\u524d\u5f8c\u7684\u751f\u7406\u6307\u6a19\u8b8a\u5316\uff08\u5982 pH \u503c\u8b8a\u5316\uff09\u3002", "attack_en": "Difference Dagger: Measures paired patient differences ($d_i = x_{after} - x_{before}$).", "attack_zh": "\u5dee\u503c\u77ed\u5200\uff1a\u76f4\u64ca\u914d\u5c0d\u60a3\u8005\u524d\u5f8c\u6e2c\u7684\u6578\u503c\u5dee\u503c ($d_i = x_{after} - x_{before}$)\u3002", "super_en": "Mean-Diff Vortex: Calculates the average difference ($\\bar{d}$) and tests if it differs significantly from zero.", "super_zh": "\u5dee\u503c\u65cb\u6e26\uff1a\u8a08\u7b97\u5e73\u5747\u5dee\u503c ($\\bar{d}$) \u4e26\u6aa2\u5b9a\u5176\u662f\u5426\u986f\u8457\u504f\u96e2\u96f6\u3002", "levels": ["Power Level 1: Paired comparison of dependent means.", "Power Level 2 (Unlock 50 PP): Difference calculation: $d_i = x_{after, i} - x_{before, i}$. Hypotheses target mean difference $\\mu_d$.", "Power Level 3 (Unlock 100 PP): Standard error is based on difference variance: $SE = s_d / \\sqrt{n}$. Degrees of freedom: $df = n - 1$.", "Power Level 4 (Unlock 150 PP): Dentist Tip: Split-mouth design means using left/right sides of same patient's mouth as paired controls.", "Power Level 5 (Max - 200 PP): Exam Mastery: In Situation 2, $t_{calc} = 1.45 < t_{crit} = 2.132$. $H_0$ is not rejected; pH increase was not significant."]}, {"id": "chi2", "emoji": "\ud83d\udd2e", "name_en": "Matrix-Master", "name_zh": "\u77e9\u9663\u5927\u5e2b", "rarity_en": "MYTHIC", "rarity_zh": "\u795e\u8a71", "rarity_class": "rarity-mythic", "trophies": 700, "desc_en": "Tests association between categorical variables (e.g. NaOCl, CHX, EDTA irrigants and occurrence of adverse events).", "desc_zh": "\u6aa2\u5b9a\u5169\u500b\u5206\u985e\u8b8a\u6578\u4e4b\u9593\u662f\u5426\u5b58\u5728\u95dc\u806f\u6027\uff08\u4f8b\u5982\uff1a\u63a2\u7a76\u4e0d\u540c\u7684\u7259\u9ad3\u6c96\u6d17\u5291\u8207\u4e0d\u826f\u53cd\u61c9\u7684\u767c\u751f\u7387\u662f\u5426\u76f8\u95dc\uff09\u3002", "attack_en": "Expected Matrix: Computes what frequencies would be observed if variables were independent ($E = \\frac{R \\cdot C}{N}$).", "attack_zh": "\u671f\u671b\u77e9\u9663\uff1a\u8a08\u7b97\u7576\u8b8a\u6578\u7368\u7acb\u7121\u95dc\u6642\u7684\u671f\u671b\u6b21\u6578 ($E = \\frac{R \\cdot C}{N}$)\u3002", "super_en": "Independence Storm: Sums deviations $\\sum \\frac{(O-E)^2}{E}$ to blow away the independence hypothesis!", "super_zh": "\u7368\u7acb\u6027\u98a8\u66b4\uff1a\u52a0\u7e3d\u6240\u6709\u683c\u5b50\u7684 $\\sum \\frac{(O-E)^2}{E}$\uff0c\u85c9\u6b64\u7c89\u788e\u7368\u7acb\u6027\u865b\u7121\u5047\u8a2d\uff01", "levels": ["Power Level 1: Categorical association grids.", "Power Level 2 (Unlock 50 PP): Expected counts formula: $E = (\\text{Row Total} \\cdot \\text{Col Total}) / \\text{Grand Total}$.", "Power Level 3 (Unlock 100 PP): Degrees of freedom: $df = (r-1)\\cdot(c-1)$. For $2 \\times 3$ grid, $df = (2-1)\\cdot(3-1) = 2$.", "Power Level 4 (Unlock 150 PP): Dentist Tip: Chi-Square is perfect for comparing treatment choices vs outcomes (e.g. irrigant types vs healing success).", "Power Level 5 (Max - 200 PP): Exam Mastery: In Situation 3, $\\chi^2 = 6.38 > \\chi^2_{crit} = 5.99$. Association confirmed!"]}, {"id": "normal", "emoji": "\ud83d\udd14", "name_en": "Bell-Curve-Baron", "name_zh": "\u9418\u5f62\u7537\u7235", "rarity_en": "LEGENDARY", "rarity_zh": "\u50b3\u5947", "rarity_class": "rarity-legendary", "trophies": 850, "desc_en": "The Legendary master of probability distributions. Controls normal curves using mean $\\mu$ and deviation $\\sigma$.", "desc_zh": "\u50b3\u5947\u7684\u6a5f\u7387\u5206\u4f48\u5927\u5e2b\u3002\u4f7f\u7528\u5e73\u5747\u6578 $\\mu$ \u8207\u6a19\u6e96\u5dee $\\sigma$ \u4f86\u99d5\u99ad\u8207\u751f\u4ff1\u4f86\u7684\u5c0d\u7a31\u9418\u5f62\u66f2\u7dda\u3002", "attack_en": "Z-Score Laser: Converts any value into standard normal space ($Z = \\frac{x-\\mu}{\\sigma}$).", "attack_zh": "Z\u503c\u96f7\u5c04\uff1a\u5c07\u4efb\u4f55\u539f\u59cb\u6578\u503c\u6295\u5f71\u81f3\u6a19\u6e96\u5e38\u614b\u7a7a\u9593\u4e2d ($Z = \\frac{x-\\mu}{\\sigma}$)\u3002", "super_en": "CLT Protection Bubble: Isolates centered intervals enclosing $p\\%$ of the patient population (e.g. central $97\\%$).", "super_zh": "\u5e38\u614b\u9632\u8b77\u7f69\uff1a\u9396\u5b9a\u6db5\u84cb $p\\%$ \u7684\u6bcd\u9ad4\u5340\u9593\uff08\u4f8b\u5982\uff1a\u5728 $\\mu \\pm 2.17\\sigma$ \u5167\u9632\u8b77 97% \u7684\u6bcd\u9ad4\uff09\u3002", "levels": ["Power Level 1: Standard normal probability computations.", "Power Level 2 (Unlock 50 PP): Z-Score standardization: $z = (x - \\mu) / \\sigma$ mapping raw scores to standard spaces.", "Power Level 3 (Unlock 100 PP): Symmetry property: $P(Z < -z) = P(Z > z) = 1 - P(Z < z)$.", "Power Level 4 (Unlock 150 PP): Dentist Tip: Physiological traits (salivary calcium, pH, flow rate) are assumed normal under physiological conditions.", "Power Level 5 (Max - 200 PP): Exam Mastery: In Situation 4, central 97% interval corresponds to $\\alpha/2=0.015$, yielding $z=2.17$. Interval is $[1.5 - 2.17(0.3), 1.5 + 2.17(0.3)] = [0.849, 2.151]$."]}];
 
+    // Math & Parsing Helpers
+    function parseCSV(str) {
+        return str.split(',')
+                  .map(x => parseFloat(x.trim()))
+                  .filter(x => !isNaN(x));
+    }
+
+    function getPercentile(sortedArr, p) {
+        let pos = (sortedArr.length - 1) * p;
+        let k = Math.floor(pos);
+        let gamma = pos - k;
+        if (k >= sortedArr.length - 1) return sortedArr[sortedArr.length - 1];
+        return (1 - gamma) * sortedArr[k] + gamma * sortedArr[k + 1];
+    }
+
+    function runDescriptiveStats(numbers) {
+        if (numbers.length === 0) return null;
+        let n = numbers.length;
+        let mean = numbers.reduce((a, b) => a + b, 0) / n;
+        let sqDiffSum = numbers.reduce((a, b) => a + Math.pow(b - mean, 2), 0);
+        let variance = n > 1 ? sqDiffSum / (n - 1) : 0;
+        let stdDev = Math.sqrt(variance);
+        
+        let sorted = [...numbers].sort((a, b) => a - b);
+        let q1 = getPercentile(sorted, 0.25);
+        let q2 = getPercentile(sorted, 0.50);
+        let q3 = getPercentile(sorted, 0.75);
+        let iqr = q3 - q1;
+        let minOutlier = q1 - 1.5 * iqr;
+        let maxOutlier = q3 + 1.5 * iqr;
+        let outliers = numbers.filter(x => x < minOutlier || x > maxOutlier);
+        
+        return { n, mean, variance, stdDev, q1, q2, q3, iqr, minOutlier, maxOutlier, outliers, sorted };
+    }
+
     // Lookup Helpers
     function getTValue(df, p) {
         if (!T_TABLE || !T_TABLE.rows) return null;
@@ -3978,6 +4099,7 @@ const F_TABLE_975 = {
         if (completedActions[actionId]) return; // prevent duplicate trophy gains
         completedActions[actionId] = true;
         
+        let oldTrophies = userTrophies;
         userTrophies = Math.min(1000, userTrophies + amount);
         saveState();
         
@@ -3988,6 +4110,33 @@ const F_TABLE_975 = {
         
         // Redraw leaderboard when user's trophies update
         renderLeaderboard();
+
+        // Leaderboard duel check: check if user just passed any rival
+        if (!isDuelMode) {
+            const rivals = [
+                { name: "🦷 Dental Bot", trophies: 80 },
+                { name: "🎸 Poco", trophies: 200 },
+                { name: "🔫 Colt", trophies: 380 },
+                { name: "🌟 Shelly", trophies: 550 },
+                { name: "🦁 Leon", trophies: 750 },
+                { name: "🌵 Spike", trophies: 950 }
+            ];
+            
+            let passedRivals = JSON.parse(localStorage.getItem('passedRivals') || '[]');
+            
+            for (let rival of rivals) {
+                if (oldTrophies < rival.trophies && userTrophies >= rival.trophies && !passedRivals.includes(rival.name)) {
+                    passedRivals.push(rival.name);
+                    localStorage.setItem('passedRivals', JSON.stringify(passedRivals));
+                    
+                    currentDuelRival = rival;
+                    setTimeout(() => {
+                        triggerLeaderboardDuel(rival);
+                    }, 1000);
+                    break; // Trigger only one duel at a time
+                }
+            }
+        }
     }
 
     function checkTrophyMilestones() {
@@ -4261,6 +4410,177 @@ const F_TABLE_975 = {
         }
     }
 
+    // ================= CUSTOM BRAWL ALERT & DUELS SYSTEM =================
+    let brawlAlertCallback = null;
+    function showCustomBrawlAlert(title, text, callback = null, isCritical = false) {
+        document.getElementById('brawlAlertTitle').innerText = title;
+        document.getElementById('brawlAlertTitle').style.color = isCritical ? 'var(--brawl-pink)' : 'var(--text-gold)';
+        document.getElementById('brawlAlertPopup').style.borderColor = isCritical ? 'var(--brawl-pink)' : 'var(--text-gold)';
+        document.getElementById('brawlAlertText').innerText = text;
+        brawlAlertCallback = callback;
+        
+        document.getElementById('brawlAlertOverlay').classList.add('active');
+        document.getElementById('brawlAlertPopup').classList.add('active');
+        
+        if (window.SOUNDS && window.SOUNDS.playClick) {
+            SOUNDS.playClick();
+        }
+    }
+    
+    function closeBrawlAlert() {
+        document.getElementById('brawlAlertOverlay').classList.remove('active');
+        document.getElementById('brawlAlertPopup').classList.remove('active');
+        if (brawlAlertCallback) {
+            brawlAlertCallback();
+            brawlAlertCallback = null;
+        }
+    }
+
+    let activeBossNum = null;
+    const BOSS_CHALLENGES = {
+        1: {
+            question: "To attack Situation 1, what is the correct Null Hypothesis (H0) for testing whether the two groups have equal variances?",
+            options: [
+                "H0: σ1² = σ2² (Variances are equal)",
+                "H0: σ1² ≠ σ2² (Variances are different)",
+                "H0: μ1 = μ2 (Means are equal)"
+            ],
+            correct: 0
+        },
+        2: {
+            question: "To attack Situation 2 (calcium supplement influence on pH before vs. after), why is a Paired t-Test used instead of an Independent t-Test?",
+            options: [
+                "Because the two samples are dependent (same patient measured twice).",
+                "Because we must assume the populations are not normally distributed.",
+                "Because the sample size is extremely small (n = 5)."
+            ],
+            correct: 0
+        },
+        3: {
+            question: "To attack Situation 3 (categorical association table), how many degrees of freedom (df) are in the 2 x 3 table?",
+            options: [
+                "df = (2-1) x (3-1) = 2",
+                "df = 2 x 3 = 6",
+                "df = (2-1) + (3-1) = 3"
+            ],
+            correct: 0
+        },
+        4: {
+            question: "To attack Situation 4, what standard normal Z-score critical value (z) corresponds to a central 97% interval?",
+            options: [
+                "z = 2.17 (leaves 1.5% area in each tail)",
+                "z = 1.96 (leaves 2.5% area in each tail)",
+                "z = 2.58 (leaves 0.5% area in each tail)"
+            ],
+            correct: 0
+        }
+    };
+
+    function loadSituationIntoCalc(num) {
+        activeBossNum = num;
+        const challenge = BOSS_CHALLENGES[num];
+        
+        document.getElementById('bossChallengeText').innerText = challenge.question;
+        const optsContainer = document.getElementById('bossChallengeOptions');
+        optsContainer.innerHTML = "";
+        
+        challenge.options.forEach((opt, idx) => {
+            const btn = document.createElement('div');
+            btn.className = "quiz-option-card";
+            btn.style.padding = "1rem";
+            btn.style.border = "3px solid #000";
+            btn.style.background = "#1a1921";
+            btn.style.color = "#fff";
+            btn.style.borderRadius = "var(--radius-md)";
+            btn.style.cursor = "pointer";
+            btn.style.transition = "transform 0.1s ease, border-color 0.2s";
+            btn.innerHTML = opt;
+            
+            btn.onclick = () => submitBossChallenge(idx);
+            
+            btn.onmouseover = () => { btn.style.borderColor = "var(--brawl-pink)"; };
+            btn.onmouseout = () => { btn.style.borderColor = "#000"; };
+            
+            optsContainer.appendChild(btn);
+        });
+        
+        document.getElementById('bossChallengeOverlay').classList.add('active');
+        document.getElementById('bossChallengePopup').classList.add('active');
+    }
+
+    function submitBossChallenge(selectedIdx) {
+        const challenge = BOSS_CHALLENGES[activeBossNum];
+        
+        document.getElementById('bossChallengeOverlay').classList.remove('active');
+        document.getElementById('bossChallengePopup').classList.remove('active');
+        
+        if (selectedIdx === challenge.correct) {
+            showCustomBrawlAlert("🔥 SUCCESSFUL ATTACK!", "Correct theoretical answer! You dealt 250 damage and loaded the data into the Stats Arena!", () => {
+                const num = activeBossNum;
+                switchTab('arena');
+                addTrophies(50, 'view_situation_' + num);
+                damageBoss(num, 250);
+                
+                if (num === 1) {
+                    switchCalcPill('ttest');
+                    document.getElementById('ttestG1Input').value = "0.97, 0.95, 0.92, 0.89";
+                    document.getElementById('ttestG2Input').value = "0.60, 0.81, 0.77, 0.67, 0.74";
+                    document.getElementById('ttestTail').value = "right";
+                    
+                    document.getElementById('ftestG1Input').value = "0.97, 0.95, 0.92, 0.89";
+                    document.getElementById('ftestG2Input').value = "0.60, 0.81, 0.77, 0.67, 0.74";
+                } else if (num === 2) {
+                    switchCalcPill('paired');
+                    document.getElementById('pairedBeforeInput').value = "7.50, 7.32, 6.83, 7.73, 7.17";
+                    document.getElementById('pairedAfterInput').value = "7.67, 7.36, 6.93, 8.08, 7.06";
+                    document.getElementById('pairedTail').value = "right";
+                } else if (num === 3) {
+                    switchCalcPill('chi2');
+                    loadSituation3IntoChiGrid();
+                } else if (num === 4) {
+                    switchCalcPill('normal');
+                    document.getElementById('normMean').value = "1.5";
+                    document.getElementById('normSD').value = "0.3";
+                    document.getElementById('normMode').value = "center";
+                    toggleNormModeInputs();
+                }
+            });
+        } else {
+            showCustomBrawlAlert("💥 ATTACK BLOCKED!", "Oh no! Incorrect statistics answer. The boss blocked your attack and counter-attacked! Try again.", null, true);
+        }
+    }
+
+    let isDuelMode = false;
+    let currentDuelRival = null;
+    
+    function triggerLeaderboardDuel(rival) {
+        document.getElementById('duelText').innerText = `You just overtook ${rival.name} (${rival.trophies} 🏆) on the leaderboard! They have invoked their right to challenge you to a 10-question statistical duel. If you win (score >= 7/10), you steal half their trophies! If they win, they steal half of your trophies!`;
+        document.getElementById('duelOverlay').classList.add('active');
+        document.getElementById('duelPopup').classList.add('active');
+    }
+    
+    function acceptDuel() {
+        document.getElementById('duelOverlay').classList.remove('active');
+        document.getElementById('duelPopup').classList.remove('active');
+        isDuelMode = true;
+        switchTab('quiz');
+        startQuiz();
+    }
+    
+    function declineDuel() {
+        document.getElementById('duelOverlay').classList.remove('active');
+        document.getElementById('duelPopup').classList.remove('active');
+        
+        let penalty = 50;
+        userTrophies = Math.max(0, userTrophies - penalty);
+        localStorage.setItem('userTrophies', userTrophies);
+        updateTrophyUI();
+        
+        showCustomBrawlAlert("🏃‍♂️ YOU FLED!", "You ran away from the duel and lost 50 trophies as a penalty.", () => {
+            switchTab('trophy');
+        }, true);
+    }
+
     function redrawActiveCanvas() {
         if (currentCalcPill === 'ftest' && document.getElementById('ftestResultsCard').style.display !== 'none') {
             calculateFTest();
@@ -4485,6 +4805,7 @@ const F_TABLE_975 = {
                 const unlockLabel = currentLang === 'en' ? "Brawler Locked! Requires:" : "英雄鎖定中！解鎖需要：";
                 
                 overlay.innerHTML = `
+                    <button class="locked-overlay-close-btn" onclick="switchCalcPill('desc')" style="position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); color: #fff; border: 2px solid #fff; border-radius: 50%; width: 35px; height: 35px; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: 0.2s; z-index: 10;" onmouseover="this.style.background='#fe4c8c'; this.style.borderColor='#fe4c8c';" onmouseout="this.style.background='rgba(0,0,0,0.6)'; this.style.borderColor='#fff';">✕</button>
                     <div class="lock-icon">🔒</div>
                     <h3 style="color:#ffffff; margin-bottom:0.5rem;">${unlockLabel}</h3>
                     <h2 style="color:var(--text-gold); font-size:1.8rem; text-shadow:2px 2px #000; -webkit-text-stroke:1px #000;">${b.trophies} 🏆 (${bName})</h2>
@@ -4553,44 +4874,16 @@ const F_TABLE_975 = {
             triggerScreenShake();
             
             // Add trophies (+100 🏆)
-            addTrophies(100, 'defeat_boss_' + bossNum);
-            
-            alert(currentLang === 'en' ? "🏆 BOSS DEFEATED! You earned +100 Trophies!" : "🏆 擊敗首領！您榮獲了 +100 榮譽獎盃！");
+            // Add trophies (+100 🏆) via custom alert callback
+            showCustomBrawlAlert(
+                currentLang === 'en' ? "🏆 BOSS DEFEATED!" : "🏆 擊敗首領！",
+                currentLang === 'en' ? "You earned +100 Trophies!" : "您榮獲了 +100 榮譽獎盃！",
+                () => { addTrophies(100, 'defeat_boss_' + bossNum); }
+            );
         }
     }
 
-    // Load Situation into calculators
-    function loadSituationIntoCalc(num) {
-        switchTab('arena');
-        addTrophies(50, 'view_situation_' + num);
-        
-        // Attack Boss! (Deal -250 HP)
-        damageBoss(num, 250);
-        
-        if (num === 1) {
-            switchCalcPill('ttest');
-            document.getElementById('ttestG1Input').value = "0.97, 0.95, 0.92, 0.89";
-            document.getElementById('ttestG2Input').value = "0.60, 0.81, 0.77, 0.67, 0.74";
-            document.getElementById('ttestTail').value = "right";
-            
-            document.getElementById('ftestG1Input').value = "0.97, 0.95, 0.92, 0.89";
-            document.getElementById('ftestG2Input').value = "0.60, 0.81, 0.77, 0.67, 0.74";
-        } else if (num === 2) {
-            switchCalcPill('paired');
-            document.getElementById('pairedBeforeInput').value = "7.50, 7.32, 6.83, 7.73, 7.17";
-            document.getElementById('pairedAfterInput').value = "7.67, 7.36, 6.93, 8.08, 7.06";
-            document.getElementById('pairedTail').value = "right";
-        } else if (num === 3) {
-            switchCalcPill('chi2');
-            loadSituation3IntoChiGrid();
-        } else if (num === 4) {
-            switchCalcPill('normal');
-            document.getElementById('normMean').value = "1.5";
-            document.getElementById('normSD').value = "0.3";
-            document.getElementById('normMode').value = "center";
-            toggleNormModeInputs();
-        }
-    }
+    // Load Situation into calculators (defined above in Custom alerts/challenges block)
 
     // ================= CLINICAL CARD MATCHER MINI-GAME =================
     const matcherScenarios = [
@@ -4679,13 +4972,20 @@ const F_TABLE_975 = {
             
             // Award PP (+30 PP to this Brawler) and Trophies (+20 🏆)
             addPowerPoints(scenario.correctBrawler, 30);
-            addTrophies(20, 'matcher_correct_' + currentMatcherIdx);
-            
-            alert(currentLang === 'en' ? "🎯 CRITICAL HIT! Correct match. Dealt 250 Damage to Boss, gained +20 Trophies and +30 Brawler PP!" : "🎯 完美暴擊！答對了。對首領造成 250 點傷害，榮獲 +20 獎盃與 +30 英雄能量點數！");
+            showCustomBrawlAlert(
+                currentLang === 'en' ? "🎯 CRITICAL HIT!" : "🎯 完美暴擊！",
+                currentLang === 'en' ? "Correct match. Dealt 250 Damage to Boss, gained +20 Trophies and +30 Brawler PP!" : "答對了！對首領造成 250 點傷害，榮獲 +20 獎盃與 +30 英雄能量點數！",
+                () => { addTrophies(20, 'matcher_correct_' + currentMatcherIdx); }
+            );
         } else {
             SOUNDS.playIncorrect();
             triggerScreenShake();
-            alert(currentLang === 'en' ? "❌ MISS! That brawler does not match the variables." : "❌ 未能擊中！該統計英雄的作戰範圍與該變數類型不符。");
+            showCustomBrawlAlert(
+                currentLang === 'en' ? "❌ MISS!" : "❌ 未能擊中！",
+                currentLang === 'en' ? "That brawler does not match the variables." : "該統計英雄的作戰範圍與該變數類型不符。",
+                null,
+                true
+            );
         }
         
         // Load next scenario
@@ -4930,7 +5230,12 @@ const F_TABLE_975 = {
         const raw = document.getElementById('descDataInput').value;
         const nums = parseCSV(raw);
         if (nums.length === 0) {
-            alert(currentLang === 'en' ? "Please enter some data points." : "請輸入數據。");
+            showCustomBrawlAlert(
+                currentLang === 'en' ? "⚠️ Empty Inputs" : "⚠️ 輸入空白",
+                currentLang === 'en' ? "Please enter some data points." : "請輸入數據。",
+                null,
+                true
+            );
             return;
         }
         
@@ -4961,7 +5266,12 @@ const F_TABLE_975 = {
         const g2 = parseCSV(raw2);
         
         if (g1.length < 2 || g2.length < 2) {
-            alert("Both groups must contain at least 2 points.");
+            showCustomBrawlAlert(
+                currentLang === 'en' ? "⚠️ Not Enough Data" : "⚠️ 數據量不足",
+                currentLang === 'en' ? "Both groups must contain at least 2 points." : "兩組數據皆必須包含至少 2 個數據點。",
+                null,
+                true
+            );
             return;
         }
         
@@ -5384,7 +5694,7 @@ const F_TABLE_975 = {
     }
 
     // CI Sandbox Formula
-    function calcSandboxCI() {
+    function calcSandboxCI(isInitial = false) {
         const m = parseFloat(document.getElementById('sbMean').value);
         const s = parseFloat(document.getElementById('sbSD').value);
         const n = parseInt(document.getElementById('sbN').value);
@@ -5571,7 +5881,9 @@ const F_TABLE_975 = {
             }
         }
         
-        addTrophies(50, 'sandbox_ci_run');
+        if (!isInitial) {
+            addTrophies(50, 'sandbox_ci_run');
+        }
     }
 
     // ================= DYNAMIC LOOKUP TABLES =================
@@ -6056,6 +6368,13 @@ const F_TABLE_975 = {
             document.getElementById('quizSummaryEmoji').innerText = emoji;
             document.getElementById('quizSummaryTitle').innerText = titleText;
             
+            if (isDuelMode) {
+                isDuelMode = false;
+                const rival = currentDuelRival;
+                setTimeout(() => {
+                    resolveLeaderboardDuel(rival, quizScore);
+                }, 500);
+            }
             saveState();
             updateTrophyUI();
             renderTrophyRoad();
@@ -6118,7 +6437,7 @@ const F_TABLE_975 = {
         applyTranslations();
         updateTrophyUI();
         switchTab('trophy');
-        calcSandboxCI();
+        calcSandboxCI(true);
         
         // Play bubble pop click sounds on active game elements
         document.addEventListener('click', (e) => {
