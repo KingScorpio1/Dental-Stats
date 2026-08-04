@@ -4573,7 +4573,7 @@ const F_TABLE_975 = {
         
         let penalty = 50;
         userTrophies = Math.max(0, userTrophies - penalty);
-        localStorage.setItem('userTrophies', userTrophies);
+        localStorage.setItem('brawl_trophies_v5', userTrophies);
         updateTrophyUI();
         
         showCustomBrawlAlert("🏃‍♂️ YOU FLED!", "You ran away from the duel and lost 50 trophies as a penalty.", () => {
@@ -4595,15 +4595,105 @@ const F_TABLE_975 = {
         }
     }
 
+    // ================= DYNAMIC LEADERBOARD BOTS SIMULATION =================
+    let lastBotSimulationTime = 0;
+    function simulateBotTrophies() {
+        let now = Date.now();
+        // Limit bot simulation to at most once every 10 seconds to feel natural
+        if (now - lastBotSimulationTime < 10000) return;
+        lastBotSimulationTime = now;
+
+        let bots = JSON.parse(localStorage.getItem('leaderboard_bots_v5')) || [
+            { name: "🌵 Spike", trophies: 950 },
+            { name: "🦁 Leon", trophies: 750 },
+            { name: "🌟 Shelly", trophies: 550 },
+            { name: "🔫 Colt", trophies: 380 },
+            { name: "🎸 Poco", trophies: 200 },
+            { name: "🦷 Dental Bot", trophies: 80 }
+        ];
+
+        bots.forEach(bot => {
+            // 45% chance of playing a match in the background
+            if (Math.random() < 0.45) {
+                // High rank bots win slightly more often
+                let winRate = 0.52;
+                if (bot.name.includes("Spike")) winRate = 0.55;
+                if (bot.name.includes("Poco")) winRate = 0.50;
+                
+                if (Math.random() < winRate) {
+                    let gain = Math.floor(Math.random() * 17) + 8; // Gained +8 to +24
+                    bot.trophies = Math.min(1200, bot.trophies + gain);
+                } else {
+                    let loss = Math.floor(Math.random() * 9) + 6; // Lost -6 to -14
+                    bot.trophies = Math.max(0, bot.trophies - loss);
+                }
+            }
+        });
+
+        localStorage.setItem('leaderboard_bots_v5', JSON.stringify(bots));
+    }
+
+    function resolveLeaderboardDuel(rival, score) {
+        // Hide summary card
+        document.getElementById('quizSummaryCard').style.display = 'none';
+        
+        // Find rival index in the dynamically loaded bot list
+        let bots = JSON.parse(localStorage.getItem('leaderboard_bots_v5')) || [
+            { name: "🌵 Spike", trophies: 950 },
+            { name: "🦁 Leon", trophies: 750 },
+            { name: "🌟 Shelly", trophies: 550 },
+            { name: "🔫 Colt", trophies: 380 },
+            { name: "🎸 Poco", trophies: 200 },
+            { name: "🦷 Dental Bot", trophies: 80 }
+        ];
+        
+        let rivalIdx = bots.findIndex(b => b.name === rival.name);
+        
+        if (score >= 7) {
+            // Victory! Steal half of rival's trophies
+            let stolen = Math.round(rival.trophies / 2);
+            
+            // Deduct from rival
+            if (rivalIdx !== -1) {
+                bots[rivalIdx].trophies = Math.max(0, bots[rivalIdx].trophies - stolen);
+                localStorage.setItem('leaderboard_bots_v5', JSON.stringify(bots));
+            }
+            
+            showCustomBrawlAlert("🏆 DUEL VICTORY!", `You scored ${score}/10 in the Duel and defeated ${rival.name}! You successfully stole ${stolen} of their trophies!`, () => {
+                addTrophies(stolen, 'duel_victory_' + rival.name);
+                switchTab('trophy');
+            });
+            SOUNDS.playUnlock();
+        } else {
+            // Defeat! Lost half of current trophies, and rival gets them!
+            let lost = Math.round(userTrophies / 2);
+            userTrophies = Math.max(0, userTrophies - lost);
+            localStorage.setItem('brawl_trophies_v5', userTrophies);
+            updateTrophyUI();
+            
+            if (rivalIdx !== -1) {
+                bots[rivalIdx].trophies = Math.min(1200, bots[rivalIdx].trophies + lost);
+                localStorage.setItem('leaderboard_bots_v5', JSON.stringify(bots));
+            }
+            
+            showCustomBrawlAlert("💥 DUEL DEFEAT!", `You scored ${score}/10. ${rival.name} outsmarted you in the statistical duel and stole half of your trophies (-${lost} 🏆)!`, () => {
+                switchTab('trophy');
+            }, true);
+            SOUNDS.playIncorrect();
+        }
+    }
+
     // ================= RENDER CLUB LEADERBOARD =================
     function renderLeaderboard() {
+        simulateBotTrophies();
+        
         const listContainer = document.getElementById('leaderboardList');
         if (!listContainer) return;
         
         document.getElementById('leaderboardTitle').innerText = currentLang === 'en' ? "🏆 Club Leaderboard" : "🏆 俱樂部排行榜";
         
-        // Fictional Brawl Stars bots
-        let list = [
+        // Dynamic load from localStorage
+        let list = JSON.parse(localStorage.getItem('leaderboard_bots_v5')) || [
             { name: "🌵 Spike", trophies: 950 },
             { name: "🦁 Leon", trophies: 750 },
             { name: "🌟 Shelly", trophies: 550 },
@@ -6463,14 +6553,15 @@ const F_TABLE_975 = {
                     "⚠️ PROGRESS WIPE",
                     "Do you really want to reset all your trophies, brawlers, and boss progress? This action cannot be undone.",
                     () => {
-                        localStorage.removeItem('userTrophies');
-                        localStorage.removeItem('unlockedBrawlers');
+                        localStorage.removeItem('brawl_trophies_v5');
+                        localStorage.removeItem('brawl_unlocked_v5');
                         localStorage.removeItem('brawl_actions_v5');
                         localStorage.removeItem('brawl_pp_v5');
                         localStorage.removeItem('brawl_levels_v5');
                         localStorage.removeItem('brawl_boss_hp_v5');
                         localStorage.removeItem('brawl_boss_def_v5');
                         localStorage.removeItem('passedRivals');
+                        localStorage.removeItem('leaderboard_bots_v5');
                         location.reload();
                     },
                     true
