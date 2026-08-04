@@ -1866,6 +1866,7 @@
 
                     <div id="sbCIResult" class="math-block" style="margin-top:1rem; display:none;"></div>
                     <canvas id="sbCICanvas" width="600" height="150" style="width: 100%; height: 150px; background: rgba(0,0,0,0.5); border: 3px solid #000; border-radius: var(--radius-md); margin-top: 1rem; display: none;"></canvas>
+                    <div id="sbCIExplanation" class="callout callout-info" style="margin-top: 1rem; display: none; font-size: 0.95rem; border-left: 5px solid var(--brawl-blue); line-height: 1.5; color:#fff;"></div>
                 </div>
             </section>
 
@@ -5454,6 +5455,51 @@ const F_TABLE_975 = {
             ctx.font = '11px Arial';
             ctx.fillText(`Interval Width: ${(me * 2).toFixed(5)} (Margin of Error: \u00b1${me.toFixed(5)})`, W / 2, 25);
         }
+
+        // Conceptual statistical insight explanation box
+        let explanationText = "";
+        
+        if (n !== prevN) {
+            if (n > prevN) {
+                explanationText = `<strong>💡 Statistical Insight (Sample Size increased):</strong> As sample size $n$ increases, standard error ($SE = \\frac{s}{\\sqrt{n}}$) decreases. This narrows the confidence interval, meaning we are more precise in our estimate because we have more data!`;
+            } else {
+                explanationText = `<strong>💡 Statistical Insight (Sample Size decreased):</strong> A smaller sample size $n$ increases standard error ($SE = \\frac{s}{\\sqrt{n}}$). This widens the confidence interval, indicating greater uncertainty in our estimate due to less data.`;
+            }
+            prevN = n;
+        } else if (s !== prevS) {
+            if (s > prevS) {
+                explanationText = `<strong>💡 Statistical Insight (Variability increased):</strong> Standard deviation $s$ measures data spread/noise. A larger $s$ increases standard error ($SE$), making the confidence interval wider because a noisy sample makes the true population mean harder to pin down.`;
+            } else {
+                explanationText = `<strong>💡 Statistical Insight (Variability decreased):</strong> A smaller standard deviation $s$ means the data is highly consistent. This decreases standard error, narrowing the confidence interval because there is less sample noise.`;
+            }
+            prevS = s;
+        } else if (alpha !== prevAlpha) {
+            if (alpha < prevAlpha) {
+                explanationText = `<strong>💡 Statistical Insight (Confidence Level increased):</strong> Toggling $\\alpha$ to a smaller value (e.g. from 0.05 to 0.01) increases our confidence level (from 95% to 99%). This widens the interval because to be more certain of capturing the true population mean, we must cast a wider net.`;
+            } else {
+                explanationText = `<strong>💡 Statistical Insight (Confidence Level decreased):</strong> Toggling $\\alpha$ to a larger value (e.g. from 0.05 to 0.10) decreases our confidence level (from 95% to 90%). This narrows the interval because we accept a higher risk (10% chance) of missing the true mean.`;
+            }
+            prevAlpha = alpha;
+        } else if (m !== prevM) {
+            explanationText = `<strong>💡 Statistical Insight (Sample Mean shifted):</strong> The confidence interval is centered directly at the sample mean ($\\bar{x}$). Shifting the mean moves the entire interval horizontally along the axis, but does not affect its width.`;
+            prevM = m;
+        } else {
+            explanationText = `<strong>💡 Statistical Insight:</strong> The confidence interval represents the range of values we are confident contains the true population mean. Try editing the parameters above (especially sample size $n$ and standard deviation $s$) to see how precision changes!`;
+        }
+
+        const expBox = document.getElementById('sbCIExplanation');
+        if (expBox) {
+            expBox.style.display = 'block';
+            expBox.innerHTML = explanationText;
+            if (window.renderMathInElement) {
+                renderMathInElement(expBox, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ]
+                });
+            }
+        }
         
         addTrophies(50, 'sandbox_ci_run');
     }
@@ -5792,6 +5838,11 @@ const F_TABLE_975 = {
             explanation_zh: "倒數規則為：$F_{df_1, df_2, \\beta} = \\frac{1}{F_{df_2, df_1, 1-\\beta}}$。因此，分子自由度3、分母自由度4的 2.5% 百分位數等於分子自由度4、分母自由度3 of the 97.5% 百分位數的倒數：$F_{3, 4, 0.025} = \\frac{1}{15.1} = 0.0662$。"
         }
     ];
+
+    let prevN = 4;
+    let prevS = 0.035;
+    let prevM = 0.9325;
+    let prevAlpha = 0.05;
 
     let currentQIdx = 0;
     let quizScore = 0;
