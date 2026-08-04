@@ -1841,19 +1841,19 @@
                     <div class="formula-interactive-inputs">
                         <div class="formula-input-item">
                             <span>$\bar{x}$:</span>
-                            <input type="number" class="form-input" id="sbMean" value="0.9325" step="0.01" style="width:100px;">
+                            <input type="number" class="form-input" id="sbMean" value="0.9325" step="0.01" oninput="calcSandboxCI()" style="width:100px;">
                         </div>
                         <div class="formula-input-item">
                             <span>$s$:</span>
-                            <input type="number" class="form-input" id="sbSD" value="0.035" step="0.001" style="width:100px;">
+                            <input type="number" class="form-input" id="sbSD" value="0.035" step="0.001" oninput="calcSandboxCI()" style="width:100px;">
                         </div>
                         <div class="formula-input-item">
                             <span>$n$:</span>
-                            <input type="number" class="form-input" id="sbN" value="4" min="2" style="width:80px;">
+                            <input type="number" class="form-input" id="sbN" value="4" min="2" oninput="calcSandboxCI()" style="width:80px;">
                         </div>
                         <div class="formula-input-item">
                             <span>$\alpha$:</span>
-                            <select class="form-select" id="sbAlpha" style="width:90px;">
+                            <select class="form-select" id="sbAlpha" onchange="calcSandboxCI()" style="width:90px;">
                                 <option value="0.05" selected>0.05</option>
                                 <option value="0.01">0.01</option>
                                 <option value="0.10">0.10</option>
@@ -1865,6 +1865,7 @@
                     </div>
 
                     <div id="sbCIResult" class="math-block" style="margin-top:1rem; display:none;"></div>
+                    <canvas id="sbCICanvas" width="600" height="150" style="width: 100%; height: 150px; background: rgba(0,0,0,0.5); border: 3px solid #000; border-radius: var(--radius-md); margin-top: 1rem; display: none;"></canvas>
                 </div>
             </section>
 
@@ -5348,6 +5349,112 @@ const F_TABLE_975 = {
                 ]
             });
         }
+
+        // Real-time confidence interval gauge visualization on Canvas
+        const canvas = document.getElementById('sbCICanvas');
+        if (canvas) {
+            canvas.style.display = 'block';
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width;
+            const H = canvas.height;
+            ctx.clearRect(0, 0, W, H);
+            
+            // Adaptive scale bounds based on interval span
+            let viewSpan = Math.max(s * 2, me * 1.8);
+            if (viewSpan === 0) viewSpan = 1;
+            let viewMin = m - viewSpan;
+            let viewMax = m + viewSpan;
+            
+            function getX(val) {
+                return 55 + (val - viewMin) / (viewMax - viewMin) * (W - 110);
+            }
+            
+            // Draw horizontal axis
+            const axisY = H - 50;
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(30, axisY);
+            ctx.lineTo(W - 30, axisY);
+            ctx.stroke();
+            
+            // Draw ticks and labels
+            ctx.fillStyle = '#fff';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            
+            const tickValues = [viewMin, m, viewMax];
+            tickValues.forEach(val => {
+                const x = getX(val);
+                ctx.strokeStyle = '#fff';
+                ctx.beginPath();
+                ctx.moveTo(x, axisY - 5);
+                ctx.lineTo(x, axisY + 5);
+                ctx.stroke();
+                ctx.fillText(val.toFixed(3), x, axisY + 20);
+            });
+            
+            // Confidence interval band
+            const ciLeft = getX(lower);
+            const ciRight = getX(upper);
+            const ciWidth = ciRight - ciLeft;
+            
+            const grad = ctx.createLinearGradient(ciLeft, 0, ciRight, 0);
+            grad.addColorStop(0, 'rgba(57, 255, 20, 0.15)');
+            grad.addColorStop(0.5, 'rgba(57, 255, 20, 0.45)');
+            grad.addColorStop(1, 'rgba(57, 255, 20, 0.15)');
+            
+            ctx.fillStyle = grad;
+            ctx.fillRect(ciLeft, axisY - 30, ciWidth, 30);
+            
+            // Whiskers bounds (Neon green)
+            ctx.strokeStyle = '#39FF14';
+            ctx.lineWidth = 4;
+            
+            ctx.beginPath();
+            ctx.moveTo(ciLeft, axisY - 35);
+            ctx.lineTo(ciLeft, axisY + 5);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(ciRight, axisY - 35);
+            ctx.lineTo(ciRight, axisY + 5);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(ciLeft, axisY - 25);
+            ctx.lineTo(ciRight, axisY - 25);
+            ctx.stroke();
+            
+            // Mean gold glowing point
+            const meanX = getX(m);
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(meanX, axisY - 25, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Whisker labels
+            ctx.fillStyle = '#39FF14';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'right';
+            ctx.fillText(lower.toFixed(4), ciLeft - 8, axisY - 10);
+            
+            ctx.textAlign = 'left';
+            ctx.fillText(upper.toFixed(4), ciRight + 8, axisY - 10);
+            
+            ctx.fillStyle = '#FFD700';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Mean: ${m.toFixed(4)}`, meanX, axisY - 40);
+            
+            // Description header text
+            ctx.fillStyle = '#fff';
+            ctx.font = '11px Arial';
+            ctx.fillText(`Interval Width: ${(me * 2).toFixed(5)} (Margin of Error: \u00b1${me.toFixed(5)})`, W / 2, 25);
+        }
+        
         addTrophies(50, 'sandbox_ci_run');
     }
 
@@ -5890,6 +5997,7 @@ const F_TABLE_975 = {
         applyTranslations();
         updateTrophyUI();
         switchTab('trophy');
+        calcSandboxCI();
         
         // Play bubble pop click sounds on active game elements
         document.addEventListener('click', (e) => {
